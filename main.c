@@ -15,7 +15,7 @@
 #define properTestNumbers 10
 #define improperTestNumbers 16
 #define newProperTestNumbers 7
-#define newImproperTestNumbers 6
+#define newImproperTestNumbers 8
 #define infixLength 100
 
 int main(int argc, const char * argv[]) {
@@ -71,9 +71,11 @@ int main(int argc, const char * argv[]) {
         "  - 5 ",
         "  + 5   ",
         "  --5 ",
-        "  ++5   ",
+        "  + +5   ",
         " - (-5) ",
-        " - (+3) "
+        " - (+3) ",
+        "5*(2/)",
+        "(2+3)3"
     };
     
     
