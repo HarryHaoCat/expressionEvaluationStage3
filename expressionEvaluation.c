@@ -105,7 +105,7 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 			}
 			else if(infixExpression[index] == ')')
 			{
-				if(index != 0 && isdigit(next(infixExpression, index)))
+				if(index != 0 && isdigit(next(infixExpression, index)) && isdigit(previous(infixExpression,index)))
 				{
 					printf("<Error! No operator between \')\' and operand \'%c\'>\n", previous(infixExpression, index));
 					return 0;					
@@ -178,10 +178,18 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 					GetTop(s, &e);
        				while (e != '(')
 					{
-						Pop(s, &postfixExpression[numIndex++]);
+						if(!Pop(s, &postfixExpression[numIndex++]))
+						{
+							printf("<Error! The stack is empty>\n");
+							return 0;
+						}
 						GetTop(s, &e);
 					}
-					Pop(s, &e);  //弹出左括号
+					if(!Pop(s, &e))  //弹出左括号
+					{
+						printf("<Error! The stack is empty>\n");
+						return 0;
+					}
 				}
 				else       //判断优先级                     
 				{
@@ -222,7 +230,11 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 					}
 					else if (Priority(infixExpression[index]) <= Priority(e))  		//否则将栈顶元素打出,这个元素入栈
 					{
-						Pop(s, &postfixExpression[numIndex++]);
+						if(!Pop(s, &postfixExpression[numIndex++]))
+						{
+							printf("<Error! The stack is empty>\n");
+							return 0;
+						}
 						if(!Push(s, infixExpression[index]))
 						{
 							printf("<Error! The stack is full>\n");
@@ -239,7 +251,11 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 	}
 	while (!StackEmpty(s))     //剩下的全部出栈
 	{ 
-		Pop(s, &postfixExpression[numIndex++]);
+		if(!Pop(s, &postfixExpression[numIndex++]))
+		{
+			printf("<Error! The stack is empty>\n");
+			return 0;
+		}
 	}
 	if(leftBrace != rightBrace)
 	{
@@ -265,14 +281,14 @@ int computeValueFromPostfix(char* postfixExpression, double *value)  //计算后
 		if(isdigit(postfixExpression[index]))   //为数字
 		{
 			int temp = index + 1;
-			double tempValue = 0;
+			double tempValue = (double)(postfixExpression[index] - '0');;
 			while(postfixExpression[temp] != '#')
 			{
-				tempValue = 10.0 * (postfixExpression[temp - 1] - '0');
+				tempValue = 10.0 *tempValue + (postfixExpression[temp] - '0');
 				temp++;
 				index++;
 			}
-			tempValue += (double)(postfixExpression[index] - '0');
+			//tempValue += (double)(postfixExpression[index] - '0');
 			if(!Push1(Is, tempValue))
 			{
 				printf("<Error! The stack is full>\n");
@@ -290,25 +306,50 @@ int computeValueFromPostfix(char* postfixExpression, double *value)  //计算后
 		else if(postfixExpression[index] == '+' || postfixExpression[index] == '-' || postfixExpression[index] == '*'|| postfixExpression[index] == '/')   //否则为操作符
 		{
 			double num1 = 0.0, num2 = 0.0;
-			Pop1(Is, &num1);
-			Pop1(Is, &num2);
-			switch(postfixExpression[index] - '0')
+			if(!Pop1(Is, &num1))
 			{
-				case ('+' - '0'): if(!Push1(Is, num2 + num1)){printf("<Error! The stack is full>\n"); return 0;}break;
-				case ('-' - '0'): if(!Push1(Is, num2 - num1)){printf("<Error! The stack is full>\n"); return 0;}break;
-				case ('*' - '0'): if(!Push1(Is, num2 * num1)){printf("<Error! The stack is full>\n"); return 0;}break;
-				case ('/' - '0'): if(num1 != 0) if(!Push1(Is, (double)num2 / num1)){printf("<Error! The stack is full>\n"); return 0;} break;
+				printf("<Error! The stack is empty>\n");
+				return 0;
+			}
+			if(!Pop1(Is, &num2))
+			{
+				printf("<Error! The stack is empty>\n");
+				return 0;
+			}
+			switch(postfixExpression[index])
+			{
+				case ('+'): if(!Push1(Is, num2 + num1)){printf("<Error! The stack is full>\n"); return 0;}break;
+				case ('-'): if(!Push1(Is, num2 - num1)){printf("<Error! The stack is full>\n"); return 0;}break;
+				case ('*'): if(!Push1(Is, num2 * num1)){printf("<Error! The stack is full>\n"); return 0;}break;
+				case ('/'): if(num1 != 0) 
+							{
+								if(!Push1(Is, (double)num2 / num1))
+								{
+									printf("<Error! The stack is full>\n"); 
+									return 0;
+								} 
+								break;
+						    }
+						    else
+						    {
+						    	printf("<Error! Some operand is divided by zero>\n");
+						    	return 0;
+						    }
 				default:break; 
 			}
 		}
 		else if(postfixExpression[index] == '@' || postfixExpression[index] == '$')
 		{
 			double num1 = 0.0;
-			Pop1(Is, &num1);
-			switch(postfixExpression[index] - '0')
+			if(!Pop1(Is, &num1))
 			{
-				case ('@' - '0'): if(!Push1(Is, num1)){printf("<Error! The stack is full>\n"); return 0;}break;
-				case ('$' - '0'): if(!Push1(Is, 0-num1)){printf("<Error! The stack is full>\n"); return 0;}break;
+				printf("<Error! The stack is empty>\n");
+				return 0;
+			}
+			switch(postfixExpression[index])
+			{
+				case ('@'): if(!Push1(Is, num1)){printf("<Error! The stack is full>\n"); return 0;}break;
+				case ('$'): if(!Push1(Is, 0-num1)){printf("<Error! The stack is full>\n"); return 0;}break;
 				default:break;
 			}
 		}
@@ -317,7 +358,11 @@ int computeValueFromPostfix(char* postfixExpression, double *value)  //计算后
 	for (int i = 0; i < 100; i++)
 		postfixExpression[i] = '\0';
 	*value = 0.0;
-	Pop1(Is, value);
+	if(!Pop1(Is, value))
+	{
+		printf("<Error! The stack is empty>\n");
+		return 0;
+	}
 	return 1;
 }
 int IsUnary(char* infixExpression)   //单元运算符

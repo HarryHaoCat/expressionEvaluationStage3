@@ -14,7 +14,6 @@
 //char型栈的实现
 void InitStack(SqStack *s) //建栈,第一个位置从0开始；
 {
-	s = (SqStack*)malloc(sizeof(SqStack));
 	s->top = 0;
 }
 
@@ -84,7 +83,6 @@ void display(SqStack *s)
 //double型栈的实现
 void InitStack1(SqStack1 *s) //建栈,第一个位置从0开始；
 {
-	s = (SqStack1*)malloc(sizeof(SqStack1));
 	s->top = 0;
 }
 
