@@ -3,6 +3,12 @@
 > Author: HaoJie
 > Mail: 954487858@qq.com
 > Created Time: 2018年07月16日  星期一 16h22m3s
+非法表达式
+        "2 ((3+2))",
+        "9+(3+)",
+        "8+(*9)",
+        "(1+4)(3*7)",
+        "((8+8))0"
 ************************************************************************/
 #include <stdio.h>
 #include "sequentialStack.h"
@@ -89,6 +95,11 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 					printf("<Error! Nothing in the braces>\n");
 					return 0;
 				}
+				else if(previous(infixExpression, index) == ')')
+				{
+					printf("<Error! No operator between \')\' and \'(\'>\n");
+					return 0;
+				}
 				else if(infixExpression[index + 1] == ' ')
 				{
 					if(next(infixExpression, index) == ')')
@@ -99,15 +110,21 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 				}
 				else if(index != 0 && isdigit(previous(infixExpression, index)))
 				{
-						printf("<Error! No operator between \'(\' and operand \'%c\'>\n", previous(infixExpression, index));
-						return 0;					
+					printf("<Error! No operator between \'(\' and operand \'%c\'>\n", previous(infixExpression, index));
+					return 0;					
 				}
 			}
 			else if(infixExpression[index] == ')')
 			{
-				if(index != 0 && isdigit(next(infixExpression, index)) && isdigit(previous(infixExpression,index)))
+				if(index == 0 || previous(infixExpression, index) == ' ')
 				{
-					printf("<Error! No operator between \')\' and operand \'%c\'>\n", previous(infixExpression, index));
+					printf("<Error! No matched \'(\' before \')\'>\n");
+					return 0;
+
+				}
+				if(index != 0 && isdigit(next(infixExpression, index)))
+				{
+					printf("<Error! No operator between \')\' and operand \'%c\'>\n", next(infixExpression, index));
 					return 0;					
 				}
 			}
@@ -257,6 +274,7 @@ int infixToPostfix(char* infixExpression, char postfixExpression[])   //中缀�
 			return 0;
 		}
 	}
+	DestroyStack(s);
 	if(leftBrace != rightBrace)
 	{
 		if(leftBrace < rightBrace)
@@ -288,7 +306,6 @@ int computeValueFromPostfix(char* postfixExpression, double *value)  //计算后
 				temp++;
 				index++;
 			}
-			//tempValue += (double)(postfixExpression[index] - '0');
 			if(!Push1(Is, tempValue))
 			{
 				printf("<Error! The stack is full>\n");
@@ -363,6 +380,7 @@ int computeValueFromPostfix(char* postfixExpression, double *value)  //计算后
 		printf("<Error! The stack is empty>\n");
 		return 0;
 	}
+	DestroyStack1(Is);
 	return 1;
 }
 int IsUnary(char* infixExpression)   //单元运算符
@@ -389,6 +407,8 @@ int Priority(char c)                 //优先级判断
 	case '-': return 1;
 	case '*': return 2;
 	case '/': return 2;
+	case '@': return 3;
+	case '$': return 3;
 	default:  return 0;
 	}
 }

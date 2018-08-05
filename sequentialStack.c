@@ -14,16 +14,31 @@
 //char型栈的实现
 void InitStack(SqStack *s) //建栈,第一个位置从0开始；
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return;
+	}
 	s->top = 0;
 }
 
 void DestroyStack(SqStack *s)    //
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return;
+	}
 	free(s);
 }
 
 int StackEmpty(SqStack *s)
-{
+{	
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 		return 1;
 	else return 0;
@@ -31,6 +46,11 @@ int StackEmpty(SqStack *s)
 
 int Push(SqStack *s, ElemType e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == MaxSize)
 	{
 		//printf("The stack is full!\n");
@@ -45,6 +65,11 @@ int Push(SqStack *s, ElemType e)
 
 int Pop(SqStack *s, ElemType *e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 	{
 		//printf("The stack is empty!\n");
@@ -60,6 +85,11 @@ int Pop(SqStack *s, ElemType *e)
 
 int GetTop(SqStack *s, ElemType *e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 	{
 		//printf("The stack is empty!\n");
@@ -73,6 +103,11 @@ int GetTop(SqStack *s, ElemType *e)
 }
 void display(SqStack *s)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return;
+	}
 	for(int i = s->top - 1; i > 0; i--)
 	{
 		printf("%c->", s->data[i]);
@@ -83,16 +118,31 @@ void display(SqStack *s)
 //double型栈的实现
 void InitStack1(SqStack1 *s) //建栈,第一个位置从0开始；
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return;
+	}
 	s->top = 0;
 }
 
 void DestroyStack1(SqStack1 *s)    //
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return;
+	}
 	free(s);
 }
 
 int StackEmpty1(SqStack1 *s)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 		return 1;
 	else return 0;
@@ -100,6 +150,11 @@ int StackEmpty1(SqStack1 *s)
 
 int Push1(SqStack1 *s, ElemType1 e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == MaxSize)
 	{
 		//printf("The stack is full!\n");
@@ -114,6 +169,11 @@ int Push1(SqStack1 *s, ElemType1 e)
 
 int Pop1(SqStack1 *s, ElemType1 *e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 	{
 		//printf("The stack is empty!\n");
@@ -129,6 +189,11 @@ int Pop1(SqStack1 *s, ElemType1 *e)
 
 int GetTop1(SqStack1 *s, ElemType1 *e)
 {
+	if(s == NULL)
+	{
+		printf("<Error! This pointer is NULL>\n");
+		return 0;
+	}
 	if(s->top == 0)
 	{
 		//printf("The stack is empty!\n");

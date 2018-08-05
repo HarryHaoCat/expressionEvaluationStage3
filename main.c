@@ -12,10 +12,10 @@
 
 #include "expressionEvaluation.h"
 
-#define properTestNumbers 10
-#define improperTestNumbers 16
-#define newProperTestNumbers 7
-#define newImproperTestNumbers 11
+#define properTestNumbers 17
+#define improperTestNumbers 22
+#define newProperTestNumbers 22
+#define newImproperTestNumbers 10
 #define infixLength 100
 
 int main(int argc, const char * argv[]) {
@@ -30,7 +30,15 @@ int main(int argc, const char * argv[]) {
         " 62 ",
         "(5)",
         " ( 62  )",
-        "23 + ( 58 -41 + 33 -25 *4)/ (49 + 1)"
+        "23 + ( 58 -41 + 33 -25 *4)/ (49 + 1)",
+
+        "  -5 ",
+        "  +5   ",
+        "-(-5)",
+        "-(3)",
+        "+(-5)",
+        "-(+3)",
+        "1+2-(6 ) "
     };
     
     char improperInfixExpressions[improperTestNumbers][infixLength]= {
@@ -54,31 +62,55 @@ int main(int argc, const char * argv[]) {
         //illegal character
         " a ",
         " 5 + b   ",
-        " 3 x 4 + 5   "
-    };
-    
-    char newProperInfixExpressions[newProperTestNumbers][infixLength]= {
-        "  -5 ",
-        "  +5   ",
-        "-(-5)",
-        "-(3)",
-        "+(-5)",
-        "-(+3)",
-        "1+2-(6 ) "
-    };
-    
-    char newImproperInfixExpressions[newImproperTestNumbers][infixLength]= {
+        " 3 x 4 + 5   ",
+
         "  - 5 ",
         "  + 5   ",
         "  --5 ",
         "  ++5   ",
         " - (-5) ",
         " - (+3) ",
-        "5*(2/)",
-        "(2+3)3",
-        "4(1)",
-        "6/(100/0)",
-        "*8"
+    };
+    
+    char newProperInfixExpressions[newProperTestNumbers][infixLength]= {
+    	"+1+2+(6 )",
+        "+1+    2-(6 )",
+        "    +1+2*(6 )",       
+        "+1+2  /(6 )",
+        "+5+(3)",
+        "+5-(3)",
+        "+5*(3)",
+        "+5/(3)",
+        "-5+(3)",
+        "-5-(3)",
+        "-5*(3)",
+        "-5/(3)",
+        "+5+(+3)",
+        "+5-(+3)",
+        "+5*(+3)",
+        "+5/(+3)",
+        "-5+(        -3)",
+        "-5-(    -3)",
+        "-5*( -3)",
+        "-5/(  -3)",
+        "4(3+5)",
+        "(3) 3"
+
+    };
+    
+    char newImproperInfixExpressions[newImproperTestNumbers][infixLength]= {
+    	"( )",
+    	"-1 + 5/(+2 + 3*4/12 -3)",
+    	"+",
+    	"-",
+    	"*",
+    	"/",
+    	" * 5",
+    	" /5",
+    	"(((8+8))0 )",
+    	"(1+4)  (3*7)"
+
+
     };
     
     
