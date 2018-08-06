@@ -12,10 +12,10 @@
 
 #include "expressionEvaluation.h"
 
-#define properTestNumbers 17
-#define improperTestNumbers 22
-#define newProperTestNumbers 22
-#define newImproperTestNumbers 10
+#define properTestNumbers 37
+#define improperTestNumbers 30
+#define newProperTestNumbers 15
+#define newImproperTestNumbers 22
 #define infixLength 100
 
 int main(int argc, const char * argv[]) {
@@ -31,14 +31,34 @@ int main(int argc, const char * argv[]) {
         "(5)",
         " ( 62  )",
         "23 + ( 58 -41 + 33 -25 *4)/ (49 + 1)",
-
+        
         "  -5 ",
         "  +5   ",
         "-(-5)",
         "-(3)",
         "+(-5)",
         "-(+3)",
-        "1+2-(6 ) "
+        "1+2-(6 ) ",
+        " +1+2+(6 ) ",
+        " +1+   2-(6 ) ",
+        "   +1+2*(6 ) ",
+        "  +1+2 /(6 ) ",
+        "+5+(3)",
+        "+5-(3)",
+        "+5*(3)",
+        "+5/(3)",
+        "-5+(3)",
+        "-5-(3)",
+        "-5*(3)",
+        "-5/(3)",
+        "+5+(+3)",
+        "+5-(+3)",
+        "+5*(+3)",
+        "+5/(+3)",
+        "-5+(    -3)",
+        "-5-(   -3)",
+        "-5*( -3)",
+        "-5/(   -3)"
     };
     
     char improperInfixExpressions[improperTestNumbers][infixLength]= {
@@ -63,53 +83,65 @@ int main(int argc, const char * argv[]) {
         " a ",
         " 5 + b   ",
         " 3 x 4 + 5   ",
-
+        // A space follows a unary operator
         "  - 5 ",
         "  + 5   ",
-        "  --5 ",
-        "  ++5   ",
         " - (-5) ",
         " - (+3) ",
+        //insufficient operands
+        "  --5 ",
+        "  ++5   ",
+        "( )",
+        "-1 + 5/( +2 + 3*4/12 -3)", //Zero divisor
+        "+",
+        "-",
+        "*",
+        "/",
+        "  * 5 ",
+        "  /5 "
     };
     
     char newProperInfixExpressions[newProperTestNumbers][infixLength]= {
-    	"+1+2+(6 )",
-        "+1+    2-(6 )",
-        "    +1+2*(6 )",       
-        "+1+2  /(6 )",
-        "+5+(3)",
-        "+5-(3)",
-        "+5*(3)",
-        "+5/(3)",
-        "-5+(3)",
-        "-5-(3)",
-        "-5*(3)",
-        "-5/(3)",
-        "+5+(+3)",
-        "+5-(+3)",
-        "+5*(+3)",
-        "+5/(+3)",
-        "-5+(        -3)",
-        "-5-(    -3)",
-        "-5*( -3)",
-        "-5/(  -3)",
-        "4(3+5)",
-        "(3) 3"
-
+        "3+( -5)",
+        "08" ,
+        " -5 / (-3) + (-6/2)*3  ",
+        " -5 / ((+3*2) /(-1)- (-6/2)*3 ) ",
+        "((((((((((3+1+1+1+1+1+1*3*5/6))))))))))/3+1   ",
+        "( ((+18))*10  )   /      2",
+        "-1200/(((12*((-12))/   12)))",
+        "(9+8)*(3-2)",
+        "(-2+9)/(8)",
+        "-(1 -5/(-1)*(+1) + (-16))",
+        "-(3*999+(((+2)*(-3))))",
+        "-(       5*(  -3))",
+        "(((-4)+3)*6)",
+        "+2*4+(2/3) ",
+        "(8*2) / (3+2)"
     };
     
     char newImproperInfixExpressions[newImproperTestNumbers][infixLength]= {
-    	"( )",
-    	"-1 + 5/(+2 + 3*4/12 -3)",
-    	"+",
-    	"-",
-    	"*",
-    	"/",
-    	" * 5",
-    	" /5",
-    	"(((8+8))0 )",
-    	"(1+4)  (3*7)"
-
+        " 3+( -  6)" ,
+        "6(5+2)" ,
+        "(5+2)  (8+5)",
+        "(1+2) (4+5)",
+        "*7+3-2 ",
+        "  7+3-2*",
+        "  (5+6)-(7+8)+(",
+        " 2 ((3+2))",
+        " (1+4)(3*7)",
+        "( ((8+8))10  )",
+        "8+(+)",
+        "8+( )",
+        "(9+8)9",
+        "  (1*9+50-5)(5*6) ",
+        "+(-5)*(-5*   -963)",
+        "  +5+6-(7+  1(   +6 ))   ",
+        "(4-3)(8*(-2))",
+        "(  )8",
+        "-(5*(      - 3))",
+        "(8*2)  (3+2)",
+        "9+(*9)    9",
+        "(2+) *9"
 
     };
     
@@ -124,9 +156,9 @@ int main(int argc, const char * argv[]) {
         if (infixToPostfix(properInfixExpressions[i], postfixExpression) == 1){
             printf("The postfix expression:%s\n", postfixExpression);
             if (computeValueFromPostfix(postfixExpression, &value) == 1)
-            printf("The value of the expression:%g\n\n", value);
+                printf("The value of the expression:%g\n\n", value);
             else
-            printf("Sorry, we can't evaluate such a postfix expression.");
+                printf("Sorry, we can't evaluate such a postfix expression.");
         }
         else{
             printf("Sorry, we can't turn such an infix expression to a postfix expression.");
@@ -143,12 +175,12 @@ int main(int argc, const char * argv[]) {
         if (infixToPostfix(improperInfixExpressions[i], postfixExpression) == 1){
             printf("The postfix expression:%s\n", postfixExpression);
             if (computeValueFromPostfix(postfixExpression, &value) == 1)
-            printf("The value of the expression:%g\n\n", value);
+                printf("The value of the expression:%g\n\n", value);
             else
-            printf("Sorry, we can't evaluate such a postfix expression.\n");
+                printf("Sorry, we can't evaluate such a postfix expression.\n");
         }
         else{
-            printf("Sorry, we can't turn such an infix expressin to a postfix expression.\n");
+            printf("Sorry, we can't turn such an infix expression to a postfix expression.\n");
         }
         printf("----------------------------------------------------------------\n\n");
     }
@@ -161,9 +193,9 @@ int main(int argc, const char * argv[]) {
         if (infixToPostfix(newProperInfixExpressions[i], postfixExpression) == 1){
             printf("The postfix expression:%s\n", postfixExpression);
             if (computeValueFromPostfix(postfixExpression, &value) == 1)
-            printf("The value of the expression:%g\n\n", value);
+                printf("The value of the expression:%g\n\n", value);
             else
-            printf("Sorry, we can't evaluate such a postfix expression.");
+                printf("Sorry, we can't evaluate such a postfix expression.");
         }
         else{
             printf("Sorry, we can't turn such an infix expression to a postfix expression.");
@@ -180,9 +212,9 @@ int main(int argc, const char * argv[]) {
         if (infixToPostfix(newImproperInfixExpressions[i], postfixExpression) == 1){
             printf("The postfix expression:%s\n", postfixExpression);
             if (computeValueFromPostfix(postfixExpression, &value) == 1)
-            printf("The value of the expression:%g\n\n", value);
+                printf("The value of the expression:%g\n\n", value);
             else
-            printf("Sorry, we can't evaluate such a postfix expression.\n");
+                printf("Sorry, we can't evaluate such a postfix expression.\n");
         }
         else{
             printf("Sorry, we can't turn such an infix expressin to a postfix expression.\n");
