@@ -2,18 +2,20 @@
 > File Name: expressionEvaluation1.c
 > Author: HaoJie
 > Mail: 954487858@qq.com
-> Created Time: 2018年07月16日  星期一 16h22m3s
+> Created Time: 2018年08月6日  星期一 17h22m3s
 ************************************************************************/
 #include <stdio.h>
 #include "sequentialStack.h"
 #include <ctype.h>
-int IsUnary(char* infixExpression);   //单元运算符
-int Priority(char c);                 //优先级判断
-char previous(char* infixExpression, int index);      //前继非空字符
-char next(char* infixExpression, int index);           //后继非空字符
+int isUnary(char* infixExpression);                   //Judge if some operator is an unary operator 
+int Priority(char c);                                 //Calculate the priority value of the operators
+char previous(char* infixExpression, int index);      //Get the first non_space character before the current character
+char next(char* infixExpression, int index);          //Get the first non_space character after the current character
+void printError(char* infixExpression, int index);
 
-int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀转后缀
-	for (int i = 0; i < 100; i++)   	                               //初始化后缀表达式数组
+//Convert infix expression into postfix expression 
+int infixToPostfix(char* infixExpression, char postfixExpression[]){   
+	for (int i = 0; i < 100; i++)   	                               
 		postfixExpression[i] = '\0';
 	int braceNum = 0;
 	SqStack* s = (SqStack*)malloc(sizeof(SqStack));
@@ -22,105 +24,150 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 	int numIndex = 0, index = 0;
 	int operand = 0, blank = 0, leftBrace = 0, rightBrace = 0;
 	while(infixExpression[index] != '\0'){
-		if(!(isdigit(infixExpression[index]) || infixExpression[index] == '+' || infixExpression[index] == ' '  //符号合法性的判断
+		/*
+		  Judge whether the current character is illegal,
+		  if the current character isn't '+', '-', '*', '/', ' ', '(', ')' or number '0'-'9', 
+		  then print proper error information, and return 0.  
+		*/
+		if(!(isdigit(infixExpression[index]) || infixExpression[index] == '+' || infixExpression[index] == ' '  
 			|| infixExpression[index] == '-' || infixExpression[index] == '*' || infixExpression[index] == '/'
 			|| infixExpression[index] == '(' || infixExpression[index] == ')')){
+			printError(infixExpression, index);
 			printf("<Error! Illegal character \'%c\' in the expression>\n", infixExpression[index]);
 			return 0;
 		}
-		else if(infixExpression[index] == ' '){      //空格直接跳过
+		//Count the number of spaces
+		else if(infixExpression[index] == ' '){    
 			blank++;
 		}
-		else if(isdigit(infixExpression[index])){   //操作数		
+		/*
+		  If the current character is a digit, if so, judge whether the character lacks operator,
+		  if it's a legal digit, put it into the array postfixExpression   
+		*/
+		else if(isdigit(infixExpression[index])){   	
 			if(infixExpression[index + 1] == ' ' && isdigit(next(infixExpression, index))){	
+				printError(infixExpression, index);
 				printf("<Error! Too many operands>\n");
 				return 0;
 			}
 			else{
 				postfixExpression[numIndex++] = infixExpression[index];
 				if(!isdigit(infixExpression[index + 1])){
-					postfixExpression[numIndex++] = '#';    //每一个操作数以后加一个'#'
+					postfixExpression[numIndex++] = '#';
 					operand++;
 				}			
 			}
 		}
-		else if(infixExpression[index] == '+' || infixExpression[index] == '-' || infixExpression[index] == '*'  //操作符
+		//If the current character is operator, space or brace
+		else if(infixExpression[index] == '+' || infixExpression[index] == '-' || infixExpression[index] == '*'  
 			 || infixExpression[index] == '/' || infixExpression[index] == '(' || infixExpression[index] == ')'){
-			if(infixExpression[index] == '+'  || infixExpression[index] == '-'){   //处理单元非法单元运算符
+			/*Handle illegal unary operator '+' and '-'.
+			  (1)A space follows an unary operator '+' or '-'.
+			  (2)A brace ')' or ending mark '\0' follows an unary operator '+' or '-'.
+			  (3)An operaor '+' or '-' follows an unary operator '+' or '-'.
+			  (4)There is only one operator '+' or '-' in the expression.
+			*/
+			if(infixExpression[index] == '+'  || infixExpression[index] == '-'){ 
 				if((previous(infixExpression,index) == ' ' || index == 0 || previous(infixExpression,index) == '(') && infixExpression[index + 1] == ' '){
+					printError(infixExpression, index);
 					printf("<Error! A space follows a unary \'%c\'>\n", infixExpression[index]);
 					return 0;
 				}
 				else if(next(infixExpression, index) == '\0' || next(infixExpression, index) == ')'){
+					printError(infixExpression, index);
 					printf("<Error! Operator \'%c\' without operand in expression>\n", infixExpression[index]);
 					return 0;
 				}
-				else if(infixExpression[index + 1 ] == '+' || infixExpression[index + 1 ] == '-' ){
-					printf("<Error! Operator \'%c\' immediately follows another operator \'%c\' in the expression>\n", infixExpression[index], infixExpression[index + 1]);
+				else if(next(infixExpression, index) == '+' || next(infixExpression, index) == '-' || next(infixExpression, index) == '*' || next(infixExpression, index) == '/'){
+					printError(infixExpression, index);
+					printf("<Error! Operator \'%c\'  follows another operator \'%c\' in the expression>\n", next(infixExpression, index), infixExpression[index]);
 					return 0;
 				}
-				else if(IsUnary(infixExpression)){
+				else if(isUnary(infixExpression)){
+					printError(infixExpression, index);
 					printf("<Error! A space follows a unary \'%c\'>\n", infixExpression[index]);
 					return 0;
 				}
 			}
-			else if(infixExpression[index] == '('){   //处理括号的非法
+			/*
+			  Handle illegal brace.
+			  (1)There is a ')' before a '('.
+			  (2)There is a digit before a '('.
+			  (3)There is a ')' after a '('.
+			*/
+			else if(infixExpression[index] == '('){  
 				braceNum++;
 				if(previous(infixExpression, index) == ')'){
+					printError(infixExpression, index);
 					printf("<Error! No operator between \')\' and \'(\'>\n");
 					return 0;
 				}
 				else if(index != 0 && isdigit(previous(infixExpression, index))){
+					printError(infixExpression, index);
 					printf("<Error! No operator between operand and \'(\'>\n");
 					return 0;					
 				}
-				else if(infixExpression[index + 1] == ')'){
-					printf("<Error! Nothing in the braces>\n");
-					return 0;
-				}
-				else if(infixExpression[index + 1] == ' '){
-					if(next(infixExpression, index) == ')'){
+				else if(next(infixExpression, index) == ')'){
+						printError(infixExpression, index);
 						printf("<Error! Nothing in the braces>\n");
-						return 0;
-					}
+						return 0;		
 				}		
 			}
+			/*
+			  Handle illegal brace.
+			  (1)Not matched braces before the current brace.
+			  (2)A digit follows a close brace ')', lack of operator.   
+			*/
 			else if(infixExpression[index] == ')'){
 				braceNum--;
 				if(index == 0 || previous(infixExpression, index) == ' ' || braceNum < 0){
+					printError(infixExpression, index);
 					printf("<Error! No matched \'(\' before \')\'>\n");
 					return 0;
 				}
 				else if(index != 0 && isdigit(next(infixExpression, index))){
+					printError(infixExpression, index);
 					printf("<Error! No operator between \')\' and operand>\n");
 					return 0;					
 				}
 			}
+			/*
+			  Handle illegal '*' and '/'
+			  (1)No opreands on both sizes of '*' or '/'.
+			  (2)No opreands before operator '*' or '/'.
+			  (3)No opreands after operator '*' or '/'.
+			  (4)An operator '*','/','+' or '-' follows operator '*' or '/'.
+			*/
 			else if(infixExpression[index] == '*' || infixExpression[index] == '/'){
 				if(previous(infixExpression, index) != ')' && !isdigit(previous(infixExpression, index)) && (next(infixExpression, index) == '\0' || next(infixExpression, index) == ')')){
+					printError(infixExpression, index);
 					printf("<Error! Operator \'%c\' without operand in expression>\n", infixExpression[index]);
 					return 0;
 				}
-				else if(previous(infixExpression, index) != ')' && !isdigit(previous(infixExpression, index))){
+				else if(index == 0 || (previous(infixExpression, index) != ')' && !isdigit(previous(infixExpression, index)) && (isdigit(next(infixExpression,index)) || next(infixExpression,index) == '('))){
+					printError(infixExpression, index);
 					printf("<Error! No operand before operator \'%c\'>\n", infixExpression[index]);
 					return 0;				
 				}
-				else if(infixExpression[index + 1] == '\0'){
-					printf("<Error! Operator \'%c\' without operand in expression>\n", infixExpression[index]);
-					return 0;
-				}
-				else if(next(infixExpression, index) == '\0' || next(infixExpression, index) == ')'){
-					printf("<Error! Operator \'%c\' without operand in expression>\n", infixExpression[index]);
+				else if(infixExpression[index + 1] == '\0' || next(infixExpression, index) == '\0' || next(infixExpression, index) == ')'){
+					printError(infixExpression, index);
+					printf("<Error! No operand after operator \'%c\'>\n", infixExpression[index]);
 					return 0;
 				}
 				else if(next(infixExpression, index) == '*' || next(infixExpression, index) == '/' || next(infixExpression, index) == '+' || next(infixExpression, index) == '-'){
+					printError(infixExpression, index);
 					printf("<Error! Operator \'%c\' follows another operator \'%c\'>\n", next(infixExpression, index), infixExpression[index]);
 					return 0;
 				}
 			}
+			//If the char stack is empty
 			if(StackEmpty(s)){
 				char pc = previous(infixExpression, index);
-				if((infixExpression[index] == '+' || infixExpression[index] == '-') && !isdigit(pc)){    //前继非空为左括号或者空格则判断为单元
+				/*
+				  If the current operator '+' or '-' is an unary operator, the put character '@' and '$' into stack respectively.
+				  Handle illegal braces '(' and ')'. 
+ 				*/
+				if((infixExpression[index] == '+' || infixExpression[index] == '-') && !isdigit(pc)){    
 					if(!Push(s, infixExpression[index] == '+'? '@':'$')){
 						printf("<Error! The stack is full>\n");
 						DestroyStack(s);
@@ -132,6 +179,7 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 						leftBrace++;
 					}
 					else if(infixExpression[index] == ')'){
+						printError(infixExpression, index);
 						printf("<Error! No matched \'(\' before \')\'>\n");
 						return 0;
 					}
@@ -142,16 +190,24 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 					}					
 				}
 			}
-			else if (infixExpression[index] == '('){  //如果是左括号直接入站	
+			//If the char stack is not empty, if the current character is '(', then put it into the char stack.
+			else if (infixExpression[index] == '('){  
 				if(!Push(s, infixExpression[index])){
 					printf("<Error! The stack is full>\n");
 					DestroyStack(s);
 					return 0;
 				}
 				leftBrace++;
-			}			
-			else{ //此时栈不为空也不为左括号    ')' '+' '-' '*' '/'
-				if (infixExpression[index] == ')'){    //若为右括号,将栈中左括号之前的符号全部弹出
+			}	
+			/*
+			  If the char stack is not emptyand the current character is ')', '+', '-', '*', '/'	
+			  (1)If the current character is ')', then move characters from the char stack to the postfix expression until meeting the open brace '('.
+			  (2)If the current character isn't ')',
+			  		(a)If the current character is prior to the top value of the char stack, then put it into the char stack,
+			  		(B)else move the top value of the stack to the postfix expression, repeat (2). 
+			*/
+			else{ 
+				if (infixExpression[index] == ')'){   
 					rightBrace++;
 					GetTop(s, &e);
        				while (e != '('){
@@ -161,24 +217,24 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 						}
 						GetTop(s, &e);
 					}
-					if(!Pop(s, &e)){  //弹出左括号
+					if(!Pop(s, &e)){  
 						printf("<Error! The stack is empty>\n");
 						return 0;
 					}
 				}
-				else{       //判断优先级                     
-					GetTop(s, &e);  			//优先级较大的符号直接进栈
+				else{                          
+					GetTop(s, &e);  			
 					if (Priority(infixExpression[index]) > Priority(e)){
 						if (infixExpression[index] == '+' || infixExpression[index] == '-'){
 							if (previous(infixExpression, index) == '(' && (infixExpression[index] == '+' || infixExpression[index] == '-') 
-								&&(isdigit(infixExpression[index + 1])||infixExpression[index + 1] == '(')){    // 作为单目运算处理
+								&&(isdigit(infixExpression[index + 1])||infixExpression[index + 1] == '(')){   
 								if(!Push(s, infixExpression[index] == '+'? '@':'$')){
 									printf("<Error! The stack is full>\n");
 									DestroyStack(s);
 									return 0;
 								}
 							}
-							else{   //普通运算符处理
+							else{   
 								if(!Push(s, infixExpression[index])){
 									printf("<Error! The stack is full>\n");
 									DestroyStack(s);
@@ -186,7 +242,7 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 								}
 							}
 						}
-						else{    //'*' '/'
+						else{   
 							if(!Push(s, infixExpression[index])){
 								printf("<Error! The stack is full>\n");
 								DestroyStack(s);
@@ -194,10 +250,16 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 							}
 						}
 					}
-					else if (Priority(infixExpression[index]) <= Priority(e)){  		//否则将栈顶元素打出,这个元素入栈
-						if(!Pop(s, &postfixExpression[numIndex++])){
-							printf("<Error! The stack is empty>\n");
-							return 0;
+					else if (Priority(infixExpression[index]) <= Priority(e)){  		
+						while(Priority(infixExpression[index]) <= Priority(e)){
+							if(!Pop(s, &postfixExpression[numIndex++])){
+								printf("<Error! The stack is empty!!!>\n");
+								return 0;
+							}
+							if(GetTop(s, &e) == 0)
+							{
+								break;
+							}
 						}
 						if(!Push(s, infixExpression[index])){
 							printf("<Error! The stack is full>\n");
@@ -205,38 +267,49 @@ int infixToPostfix(char* infixExpression, char postfixExpression[]){   //中缀�
 							return 0;
 						}						
 						index++;
-						continue;   //重新开始一次循环
+						continue;   
 					}
 				}				
 			}
 		}
 	 index++;
 	}
-	while (!StackEmpty(s)){     //剩下的全部出栈
+	//Move the rest characters in the char stack to the postfix expression.
+	while (!StackEmpty(s)){    
 		if(!Pop(s, &postfixExpression[numIndex++])){
 			printf("<Error! The stack is empty>\n");
 			return 0;
 		}
 	}
+	//DestroyStack the char stack.
 	DestroyStack(s);
 	if(leftBrace != rightBrace){
-		if(leftBrace < rightBrace)
+		if(leftBrace < rightBrace){
+			printError(infixExpression, index - 1);
 			printf("<Error! No matched \'(\' before \')\'>\n");
-		else printf("<Error! No matched \')\' after \'(\'>\n");
+		}
+		else{
+			printError(infixExpression, index - 1);
+			printf("<Error! No matched \')\' after \'(\'>\n");
+		}
 		return 0;
 	}
+	//Judge if the input is empty.
 	if(blank == index){
 		printf("<Error! The input is EMPTY>\n");
 		return 0; 
 	}
 	else return 1;
 }
-int computeValueFromPostfix(char* postfixExpression, double *value){  //计算后缀表达式
+
+//Compute the value of postfix expression.
+int computeValueFromPostfix(char* postfixExpression, double *value){ 
 	int index = 0;
 	SqStack1* Is = (SqStack1*)malloc(sizeof(SqStack1));
 	InitStack1(Is);
 	while(postfixExpression[index] != '\0'){
-		if(isdigit(postfixExpression[index])){   //为数字
+		if(isdigit(postfixExpression[index])){ 
+			
 			int temp = index + 1;
 			double tempValue = (double)(postfixExpression[index] - '0');;
 			while(postfixExpression[temp] != '#'){
@@ -263,7 +336,8 @@ int computeValueFromPostfix(char* postfixExpression, double *value){  //计算�
 				return 0;
 			}
 			if(!Pop1(Is, &num2)){
-				printf("<Error! The stack is empty>\n");
+				printError(postfixExpression, index);
+				printf("<Error! No  operand after Operator \'%c\' in the expression>\n", postfixExpression[index]);
 				return 0;
 			}
 			switch(postfixExpression[index]){
@@ -278,6 +352,7 @@ int computeValueFromPostfix(char* postfixExpression, double *value){  //计算�
 								break;
 						    }
 						    else{
+						    	printError(postfixExpression, index);
 						    	printf("<Error! Some operand is divided by zero>\n");
 						    	return 0;
 						    }
@@ -308,7 +383,7 @@ int computeValueFromPostfix(char* postfixExpression, double *value){  //计算�
 	DestroyStack1(Is);
 	return 1;
 }
-int IsUnary(char* infixExpression){   //单元运算符
+int isUnary(char* infixExpression){   
 	int index = 0, operator = 0, operand = 0;
 	while(infixExpression[index] != '\0'){
 		if(infixExpression[index] == '+' || infixExpression[index] == '-' || infixExpression[index] == '*' || infixExpression[index] == '/')
@@ -321,7 +396,7 @@ int IsUnary(char* infixExpression){   //单元运算符
 		return 1;
 	return 0;
 }
-int Priority(char c){                 //优先级判断
+int Priority(char c){               
 	switch (c){
 	case '(': return 0;
 	case '+': return 1;
@@ -343,3 +418,12 @@ char next(char* infixExpression, int index){                           //后继�
 	while(infixExpression[++i] == ' ' && infixExpression[i] != '\0');
 	return infixExpression[i];                 // 返回的东西要是式一个非空的字符,要么返回值'\0'
 }    
+void printError(char* infixExpression, int index){
+	printf("\"");
+	for(int i = 0; i < index; i++)
+        printf("%c", infixExpression[i]);
+    printf("\e[47;30m%c\e[0m", infixExpression[index]);
+    while(infixExpression[++index] != '\0')
+        printf("%c",infixExpression[index]);
+    printf("\"\n");
+}

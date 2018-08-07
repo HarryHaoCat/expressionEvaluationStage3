@@ -13,11 +13,12 @@
 #define infixLength 100
 
 int main(){
-	char testChar[17] = {'+', '-', '*', '/', '(', ')', ' ','0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+	char testChar[35] = {'+', ' ', '-', ' ', '*', '/',' ', '(', ')', ' ','+', ' ', '-', ' ', '*', '/',' ', '(', ')', ' ','0', '1',' ', '2', ' ', '3', '4', ' ', '5', '6', ' ', '7', '8', ' ',  '9'};
 	char testExpression[improperTestNumbers][ExpressionLen] = {};
+	srand(100);
 	for(int i = 0; i < improperTestNumbers; i++){
 		for(int j = 0; j < ExpressionLen; j++){
-			testExpression[i][j] = testChar[rand() % 17];
+			testExpression[i][j] = testChar[rand() % 35];
 		}
 		//printf("%s", testExpression[i]);
 		char postfixExpression[infixLength];
