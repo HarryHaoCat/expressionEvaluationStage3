@@ -10,11 +10,11 @@
 #include<string.h>
 #include "sequentialStack.h"
 
-
-//char型栈的实现
-void InitStack(SqStack *s) //建栈,第一个位置从0开始；
+/*  Initialize the sequential stack
+ */
+void InitStack(SqStack *s) 
 {
-	if(s == NULL)
+	if(s == NULL)  //If the pointer s points to NULL.
 	{
 		printf("<Error! This pointer is NULL>\n");
 		return;
@@ -22,16 +22,22 @@ void InitStack(SqStack *s) //建栈,第一个位置从0开始；
 	s->top = 0;
 }
 
-void DestroyStack(SqStack *s)    //
+/*  Release the memory of the sequential stack
+ */
+void DestroyStack(SqStack *s)    
 {
 	if(s == NULL)
 	{
 		printf("<Error! This pointer is NULL>\n");
 		return;
 	}
-	free(s);
+	free(s);   //Free the pointer that points to the stack.
 }
 
+/*  Check if the stack is empty.
+    Return 1 to indicate the stack is empty.
+    Return 0 to indicate the stack is NOT empty.
+ */
 int StackEmpty(SqStack *s)
 {	
 	if(s == NULL)
@@ -44,6 +50,9 @@ int StackEmpty(SqStack *s)
 	else return 0;
 }
 
+/*  If the stack is NOT full, push e into it and return 1 to indicate a successful push.
+    If the stack is full, merely return 0 to indicate an unsuccessful push.
+ */
 int Push(SqStack *s, ElemType e)
 {
 	if(s == NULL)
@@ -63,6 +72,9 @@ int Push(SqStack *s, ElemType e)
 	}
 }
 
+/*  If the stack is NOT empty, pop the top of the stack into e and return 1 to indicate a successful pop.
+    If the stack is empty, merely return 0 to indicate an unsuccessful pop.
+ */
 int Pop(SqStack *s, ElemType *e)
 {
 	if(s == NULL)
@@ -83,6 +95,9 @@ int Pop(SqStack *s, ElemType *e)
 	}
 }
 
+/*  If the stack is NOT empty, assign the top of the stack to e and return 1 to indicate a successful gettop.
+    If the stack is empty, merely return 0 to indicate an unsuccessful gettop.
+ */
 int GetTop(SqStack *s, ElemType *e)
 {
 	if(s == NULL)
@@ -101,6 +116,7 @@ int GetTop(SqStack *s, ElemType *e)
 		return 1;
 	}
 }
+
 void display(SqStack *s)
 {
 	if(s == NULL)
@@ -115,8 +131,11 @@ void display(SqStack *s)
 	printf("%d\n", s->data[0]);
 }
 
-//double型栈的实现
-void InitStack1(SqStack1 *s) //建栈,第一个位置从0开始；
+/* Interfaces for the 2nd stack for double elements*/
+
+//  Initialize the sequential stack
+
+void InitStack1(SqStack1 *s) 
 {
 	if(s == NULL)
 	{
@@ -126,7 +145,9 @@ void InitStack1(SqStack1 *s) //建栈,第一个位置从0开始；
 	s->top = 0;
 }
 
-void DestroyStack1(SqStack1 *s)    //
+/*  Release the memory of the sequential stack
+ */
+void DestroyStack1(SqStack1 *s)   
 {
 	if(s == NULL)
 	{
@@ -136,6 +157,10 @@ void DestroyStack1(SqStack1 *s)    //
 	free(s);
 }
 
+/*  Check if the stack is empty.
+ Return 1 to indicate the stack is empty.
+ Return 0 to indicate the stack is NOT empty.
+ */
 int StackEmpty1(SqStack1 *s)
 {
 	if(s == NULL)
@@ -147,6 +172,9 @@ int StackEmpty1(SqStack1 *s)
 		return 1;
 	else return 0;
 }
+/*  If the stack is NOT full, push e into it and return 1 to indicate a successful push.
+    If the stack is full, merely return 0 to indicate an unsuccessful push.
+ */
 
 int Push1(SqStack1 *s, ElemType1 e)
 {
@@ -166,7 +194,9 @@ int Push1(SqStack1 *s, ElemType1 e)
 		return 1;
 	}
 }
-
+/*  If the stack is NOT empty, pop the top of the stack into e and return 1 to indicate a successful pop.
+    If the stack is empty, merely return 0 to indicate an unsuccessful pop.
+ */
 int Pop1(SqStack1 *s, ElemType1 *e)
 {
 	if(s == NULL)
@@ -186,7 +216,9 @@ int Pop1(SqStack1 *s, ElemType1 *e)
 		return 1;
 	}
 }
-
+/*  If the stack is NOT empty, assign the top of the stack to e and return 1 to indicate a successful gettop.
+    If the stack is empty, merely return 0 to indicate an unsuccessful gettop.
+ */
 int GetTop1(SqStack1 *s, ElemType1 *e)
 {
 	if(s == NULL)

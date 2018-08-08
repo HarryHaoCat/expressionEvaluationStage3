@@ -1,9 +1,3 @@
-/*************************************************************************
-	> File Name: m.c
-	> Author: HarryHao
-	> Mail: 954487858@qq.com 
-	> Created Time: 2018年08月06日 星期一 21时00分06秒
- ************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,4 +35,3 @@ int main(){
     printf("-----***   End of tests for IMPROPER prefix expressions.    ***-----\n\n\n");
 	return 0;
 }
-
